@@ -75,6 +75,26 @@ export async function fetchPackages(limit?: number) {
   return hygraphFetch<{ packages: PackageItem[] }>(query, { limit });
 }
 
+export async function fetchInternationalPackages(limit?: number) {
+  const query = gql`
+    query GetInternationalPackages($limit: Int) {
+      internationalPackages(first: $limit, where: { active: true }) {
+        id
+        packageName
+        description { html }
+        locations
+        dayCount
+        nightCount
+        bestTime
+        price
+        image { url }
+        active
+      }
+    }
+  `;
+  return hygraphFetch<{ internationalPackages: PackageItem[] }>(query, { limit });
+}
+
 export async function fetchTestimonials(limit?: number) {
   const query = gql`
     query Testimonials($limit: Int) {

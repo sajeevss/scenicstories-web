@@ -48,18 +48,14 @@ const VideoModal = ({
 
   if (!isOpen) return null;
 
-  const isYouTube = (url: string) => url.includes("youtube.com") || url.includes("youtu.be");
-  const isVimeo = (url: string) => url.includes("vimeo.com");
-  const isDirectVideo = (url: string) => /(\.mp4|\.webm|\.ogg)(\?.*)?$/i.test(url);
-
   const getEmbedUrl = (url: string) => {
-    if (isYouTube(url)) {
+    if (url.includes("youtube.com") || url.includes("youtu.be")) {
       const videoId = url.includes("youtu.be")
         ? url.split("/").pop()
         : new URL(url).searchParams.get("v");
       return `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
     }
-    if (isVimeo(url)) {
+    if (url.includes("vimeo.com")) {
       const videoId = url.split("/").pop();
       return `https://player.vimeo.com/video/${videoId}?autoplay=1&muted=1`;
     }
@@ -112,24 +108,13 @@ const VideoModal = ({
 
           <div className="relative aspect-video bg-muted">
             {videoUrl ? (
-              isDirectVideo(videoUrl) ? (
-                <video
-                  src={videoUrl}
-                  poster={posterImage}
-                  className="w-full h-full"
-                  controls
-                  autoPlay
-                  muted
-                />
-              ) : (
-                <iframe
-                  src={getEmbedUrl(videoUrl)}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  title={travelerName ? `${travelerName}'s story` : "Customer story"}
-                />
-              )
+              <iframe
+                src={getEmbedUrl(videoUrl)}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title={travelerName ? `${travelerName}'s story` : "Customer story"}
+              />
             ) : posterImage ? (
               <img
                 src={posterImage}

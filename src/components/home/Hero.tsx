@@ -11,7 +11,7 @@ const Hero = () => {
         className="absolute inset-0 bg-cover bg-center"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="absolute inset-0 gradient-hero"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/40 to-background/80"></div>
       </div>
 
       {/* Content */}
@@ -24,7 +24,7 @@ const Hero = () => {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-scale-in">
           <Button variant="hero" size="lg" asChild>
-            <Link to="/packages">
+            <Link to="/domestic">
               View Packages <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>

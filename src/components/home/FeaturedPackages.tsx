@@ -38,11 +38,11 @@ const FeaturedPackages = () => {
         </div>
 
         {error && (
-          <p className="text-center text-red-500">{error}</p>
+          <p className="text-center text-red-500 mb-8">{error}</p>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {(loading ? Array.from({ length: 3 }) : items).map((pkg, index) => (
+          {(loading ? Array.from({ length: 3 }) : items).map((pkg: any, index) => (
             <Card
               key={loading ? index : pkg.id}
               className="overflow-hidden group hover:shadow-soft transition-smooth animate-scale-in"
@@ -66,21 +66,21 @@ const FeaturedPackages = () => {
               <CardHeader>
                 <CardTitle className="text-xl">{loading ? "\u00A0" : pkg.packageName}</CardTitle>
                 <div className="flex items-center text-sm text-muted-foreground mt-2">
-                  <MapPin className="h-4 w-4 mr-1 text-primary" />
-                  {loading ? "\u00A0" : (pkg.locations || []).join(" • ")}
+                  <MapPin className="h-4 w-4 mr-1 text-primary flex-shrink-0" />
+                  <span className="truncate">
+                    {loading ? "\u00A0" : pkg.locations?.join(" • ") || "Multiple destinations"}
+                  </span>
                 </div>
               </CardHeader>
               <CardContent className="space-y-2">
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Clock className="h-4 w-4 mr-2 text-primary" />
-                  {loading ? "\u00A0" : `${pkg.dayCount ?? 0} Days / ${pkg.nightCount ?? 0} Nights`}
+                  {loading ? "\u00A0" : `${pkg.dayCount || 0} Days / ${pkg.nightCount || 0} Nights`}
                 </div>
                 <div className="flex items-center text-lg font-semibold text-primary">
                   <IndianRupee className="h-5 w-5 mr-1" />
                   <span className="text-base">
-                    {loading
-                      ? "\u00A0"
-                      : new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(pkg.price || 0)}
+                    {loading ? "\u00A0" : pkg.price ? `${pkg.price.toLocaleString()}` : "Contact for price"}
                   </span>
                 </div>
               </CardContent>
@@ -102,8 +102,8 @@ const FeaturedPackages = () => {
         </div>
 
         <div className="text-center mt-12">
-          <Button variant="outline" size="lg" asChild>
-            <Link to="/packages">View All Packages</Link>
+          <Button variant="hero" size="lg" asChild>
+            <Link to="/domestic">View All Packages</Link>
           </Button>
         </div>
       </div>
@@ -112,4 +112,3 @@ const FeaturedPackages = () => {
 };
 
 export default FeaturedPackages;
-

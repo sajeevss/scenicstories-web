@@ -1,42 +1,30 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import VideoModal from "@/components/testimonials/VideoModal";
 import { fetchTestimonials, type TestimonialItem } from "@/lib/hygraph";
 
-function getYoutubeThumbnail(url?: string) {
+// Helper function to extract YouTube video ID and create thumbnail URL
+const getYoutubeThumbnail = (url?: string): string | null => {
   if (!url) return null;
-  try {
-    if (url.includes("youtu.be")) {
-      const id = url.split("/").pop();
-      return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
-    }
-    if (url.includes("youtube.com")) {
-      const id = new URL(url).searchParams.get("v");
-      return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : null;
-    }
-    return null;
-  } catch {
-    return null;
+  
+  let videoId = null;
+  if (url.includes("youtube.com/watch?v=")) {
+    videoId = url.split("v=")[1]?.split("&")[0];
+  } else if (url.includes("youtu.be/")) {
+    videoId = url.split("youtu.be/")[1]?.split("?")[0];
   }
-}
+  
+  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+};
 
 const Testimonials = () => {
-  const [currentPage, setCurrentPage] = useState(1);
   const [items, setItems] = useState<TestimonialItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedTestimonial, setSelectedTestimonial] = useState<TestimonialItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const itemsPerPage = 4;
-  const totalPages = Math.ceil((items?.length || 0) / itemsPerPage) || 1;
-
-  const paginatedTestimonials = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return (items || []).slice(startIndex, endIndex);
-  }, [currentPage, items]);
 
   useEffect(() => {
     let mounted = true;
@@ -54,6 +42,15 @@ const Testimonials = () => {
       mounted = false;
     };
   }, []);
+
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(items.length / itemsPerPage);
+
+  const paginatedTestimonials = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return items.slice(startIndex, endIndex);
+  }, [currentPage, items]);
 
   const handleOpenModal = (testimonial: TestimonialItem) => {
     setSelectedTestimonial(testimonial);
@@ -97,12 +94,12 @@ const Testimonials = () => {
         </div>
 
         {error && (
-          <p className="text-center text-red-500">{error}</p>
+          <p className="text-center text-red-500 mb-8">{error}</p>
         )}
 
         {/* Video Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
-          {(loading ? Array.from({ length: itemsPerPage }) : paginatedTestimonials).map((testimonial: any, index) => (
+          {(loading ? Array.from({ length: 4 }) : paginatedTestimonials).map((testimonial: any, index) => (
               <div
                 key={loading ? index : testimonial.id}
                 className="group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-soft transition-smooth cursor-pointer animate-scale-in"
@@ -154,7 +151,7 @@ const Testimonials = () => {
                 </div>
 
                 <div className="p-5">
-                  {(!loading && (testimonial.travelerName || testimonial.travelerLocation)) && (
+                  {!loading && (testimonial.travelerName || testimonial.travelerLocation) && (
                     <div className="mb-3">
                       {testimonial.travelerName && (
                         <h3 className="font-semibold text-lg">{testimonial.travelerName}</h3>
@@ -166,16 +163,23 @@ const Testimonials = () => {
                       )}
                     </div>
                   )}
-                  {!loading && (
-                    <div className="text-muted-foreground text-sm italic line-clamp-3" dangerouslySetInnerHTML={{ __html: testimonial.description?.html || "" }} />
-                  )}
+                  {!loading && testimonial.description?.html ? (
+                    <div 
+                      className="text-muted-foreground text-sm italic line-clamp-3"
+                      dangerouslySetInnerHTML={{ __html: testimonial.description.html }}
+                    />
+                  ) : loading ? (
+                    <p className="text-muted-foreground text-sm italic line-clamp-3">
+                      "\u00A0"
+                    </p>
+                  ) : null}
                 </div>
               </div>
             ))}
         </div>
 
         {/* Pagination */}
-        {(!loading && totalPages > 1) && (
+        {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mb-16">
             <Button
               variant="outline"
@@ -254,4 +258,3 @@ const Testimonials = () => {
 };
 
 export default Testimonials;
-

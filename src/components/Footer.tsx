@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Mail, Phone, MapPin, Facebook, Instagram, Twitter } from "lucide-react";
+import { Mail, Phone, MapPin, Facebook, Instagram } from "lucide-react";
 import logo from "@/assets/sceniclogo.webp";
 
 const Footer = () => {
@@ -17,7 +17,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-3">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/p/Scenic-Stories-61557832313060/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
@@ -26,22 +26,13 @@ const Footer = () => {
                 <Facebook className="h-4 w-4" />
               </a>
               <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/scenicstoriestours?igsh=NDJwcmk4bmUwZXc="
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
                 aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
-                aria-label="Twitter"
-              >
-                <Twitter className="h-4 w-4" />
               </a>
             </div>
           </div>
@@ -56,8 +47,13 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/packages" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
-                  Tour Packages
+                <Link to="/domestic" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
+                  Domestic Tours
+                </Link>
+              </li>
+              <li>
+                <Link to="/international" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
+                  International Tours
                 </Link>
               </li>
               <li>
@@ -96,12 +92,12 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
-                <span>Kochi, Kerala, India</span>
+                <span>Vadakke Vaimeethi Rd, Eroor North, Eroor, Kochi, Kerala 682306</span>
               </li>
               <li className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Phone className="h-4 w-4 flex-shrink-0 text-primary" />
                 <a href="tel:+918075456058" className="hover:text-primary transition-smooth">
-                  +91 8075456058
+                  +91 80754 56058
                 </a>
               </li>
               <li className="flex items-center space-x-2 text-sm text-muted-foreground">

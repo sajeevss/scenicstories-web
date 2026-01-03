@@ -63,7 +63,8 @@ const Contact = () => {
                     <h3 className="font-semibold mb-1">Our Office</h3>
                     <p className="text-muted-foreground">
                       Scenic Stories Tours and Travels<br />
-                      Kochi, Kerala, India
+                      Vadakke Vaimeethi Rd, Eroor North,<br />
+                      Eroor, Kochi, Kerala 682306
                     </p>
                   </div>
                 </div>
@@ -78,7 +79,7 @@ const Contact = () => {
                       href="tel:+918075456058"
                       className="text-muted-foreground hover:text-primary transition-smooth"
                     >
-                      +91 8075456058
+                      +91 80754 56058
                     </a>
                   </div>
                 </div>

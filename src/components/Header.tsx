@@ -10,8 +10,8 @@ const Header = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Packages", path: "/packages" },
-    { name: "Services", path: "/services" },
+    { name: "Domestic", path: "/domestic" },
+    { name: "International", path: "/international" },
     { name: "About Us", path: "/about" },
     { name: "Testimonials", path: "/testimonials" },
     { name: "Contact", path: "/contact" },
@@ -37,7 +37,7 @@ const Header = () => {
                 className={`px-3 lg:px-4 py-2 rounded-md text-sm font-medium transition-smooth ${
                   isActive(item.path)
                     ? "bg-primary/10 text-primary"
-                    : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                    : "text-foreground/80 hover:bg-primary/10 hover:text-primary"
                 }`}
               >
                 {item.name}
@@ -80,7 +80,7 @@ const Header = () => {
                   className={`px-4 py-3 rounded-md text-sm font-medium transition-smooth ${
                     isActive(item.path)
                       ? "bg-primary/10 text-primary"
-                      : "text-foreground/80 hover:bg-muted hover:text-foreground"
+                      : "text-foreground/80 hover:bg-primary/10 hover:text-primary"
                   }`}
                 >
                   {item.name}
