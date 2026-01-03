@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import logo from "@/assets/sceniclogo.webp";
+import { trackContactConversion } from "@/lib/gtag";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -52,6 +53,7 @@ const Header = () => {
                 href="https://wa.me/+918075456058?text=Hi%2C%20I%20want%20to%20enquire%20about%20tour%20packages"
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => trackContactConversion()}
               >
                 WhatsApp Us
               </a>
@@ -92,6 +94,7 @@ const Header = () => {
                     href="https://wa.me/+918075456058?text=Hi%2C%20I%20want%20to%20enquire%20about%20tour%20packages"
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() => trackContactConversion()}
                   >
                     WhatsApp Us
                   </a>

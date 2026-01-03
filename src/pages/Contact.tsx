@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { trackContactConversion } from "@/lib/gtag";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,9 @@ const Contact = () => {
     // Create WhatsApp message
     const whatsappMessage = `New Contact Form Submission:\n\nName: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\nMessage: ${formData.message}`;
     const whatsappUrl = `https://wa.me/+918075456058?text=${encodeURIComponent(whatsappMessage)}`;
+    
+    // Track conversion
+    trackContactConversion();
     
     // Open WhatsApp
     window.open(whatsappUrl, "_blank");
@@ -91,10 +95,10 @@ const Contact = () => {
                   <div>
                     <h3 className="font-semibold mb-1">Email</h3>
                     <a
-                      href="mailto:scenicstory@gmail.com"
+                      href="mailto:sajeev@scenicstories.com"
                       className="text-muted-foreground hover:text-primary transition-smooth"
                     >
-                      scenicstory@gmail.com
+                      sajeev@scenicstories.com
                     </a>
                   </div>
                 </div>

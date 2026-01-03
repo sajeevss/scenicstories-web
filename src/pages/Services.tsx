@@ -109,7 +109,7 @@ const Services = () => {
               WhatsApp Us
             </a>
             <a
-              href="mailto:scenicstory@gmail.com"
+              href="mailto:sajeev@scenicstories.com"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/10 border-2 border-white text-white rounded-md font-medium hover:bg-white hover:text-primary transition-smooth backdrop-blur-sm"
             >
               Email Us

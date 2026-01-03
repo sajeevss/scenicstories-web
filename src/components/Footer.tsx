@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin, Facebook, Instagram } from "lucide-react";
 import logo from "@/assets/sceniclogo.webp";
+import msmeLogo from "@/assets/msme-logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -102,16 +103,35 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4 flex-shrink-0 text-primary" />
-                <a href="mailto:scenicstory@gmail.com" className="hover:text-primary transition-smooth">
-                  scenicstory@gmail.com
+                <a href="mailto:sajeev@scenicstories.com" className="hover:text-primary transition-smooth">
+                  sajeev@scenicstories.com
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
+        {/* UDYAM Registration */}
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="text-center">
+            <div className="flex items-center justify-center mb-3">
+              <img 
+                src={msmeLogo} 
+                alt="Ministry of Micro, Small & Medium Enterprises" 
+                className="h-12 w-auto opacity-80"
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mb-2">
+              Recognised by Ministry of Micro, Small and Medium Enterprises
+            </p>
+            <p className="text-xs font-medium text-muted-foreground">
+              UDYAM REGISTRATION NUMBER: UDYAM-KL-02-0042175
+            </p>
+          </div>
+        </div>
+
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border">
+        <div className="mt-8 pt-8 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-muted-foreground">
               © {currentYear} Scenic Stories Tours and Travels. All rights reserved.

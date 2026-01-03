@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Mail } from "lucide-react";
+import { trackContactConversion } from "@/lib/gtag";
 
 const CTASection = () => {
   return (
@@ -17,6 +18,7 @@ const CTASection = () => {
               href="https://wa.me/+918075456058?text=Hi%2C%20I%20want%20to%20plan%20a%20trip%20with%20Scenic%20Stories"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackContactConversion()}
             >
               <MessageCircle className="mr-2 h-5 w-5" />
               WhatsApp Us
@@ -28,7 +30,10 @@ const CTASection = () => {
             className="bg-white/10 border-white/30 text-white hover:bg-white hover:text-primary backdrop-blur-sm"
             asChild
           >
-            <a href="mailto:scenicstory@gmail.com">
+            <a 
+              href="mailto:sajeev@scenicstories.com"
+              onClick={() => trackContactConversion()}
+            >
               <Mail className="mr-2 h-5 w-5" />
               Email Us
             </a>
