@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock, MapPin, IndianRupee } from "lucide-react";
+import { Clock, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchPackages, type PackageItem } from "@/lib/hygraph";
@@ -76,12 +76,6 @@ const FeaturedPackages = () => {
                 <div className="flex items-center text-sm text-muted-foreground">
                   <Clock className="h-4 w-4 mr-2 text-primary" />
                   {loading ? "\u00A0" : `${pkg.dayCount || 0} Days / ${pkg.nightCount || 0} Nights`}
-                </div>
-                <div className="flex items-center text-lg font-semibold text-primary">
-                  <IndianRupee className="h-5 w-5 mr-1" />
-                  <span className="text-base">
-                    {loading ? "\u00A0" : pkg.price ? `${pkg.price.toLocaleString()}` : "Contact for price"}
-                  </span>
                 </div>
               </CardContent>
               <CardFooter>

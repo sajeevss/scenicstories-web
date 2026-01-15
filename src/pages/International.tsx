@@ -143,14 +143,8 @@ const International = () => {
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
-                    <div>
-                      <span className="text-xs text-muted-foreground">Starting from</span>
-                      <p className="text-xl font-bold text-primary">
-                        {loading ? "\u00A0" : pkg.price ? `₹${pkg.price.toLocaleString()}` : "Contact for price"}
-                      </p>
-                    </div>
-                    <Button variant="hero" size="sm" asChild>
+                  <div className="pt-4 border-t border-border">
+                    <Button variant="hero" size="sm" asChild className="w-full">
                       <a
                         href={`https://wa.me/+918075456058?text=Hi%2C%20I'm%20interested%20in%20the%20${encodeURIComponent(
                           loading ? "package" : pkg.packageName

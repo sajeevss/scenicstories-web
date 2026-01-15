@@ -4,18 +4,16 @@ import { Button } from "@/components/ui/button";
 import VideoModal from "@/components/testimonials/VideoModal";
 import { fetchTestimonials, type TestimonialItem } from "@/lib/hygraph";
 
-// Helper function to extract YouTube video ID and create thumbnail URL
-const getYoutubeThumbnail = (url?: string): string | null => {
-  if (!url) return null;
-  
-  let videoId = null;
-  if (url.includes("youtube.com/watch?v=")) {
-    videoId = url.split("v=")[1]?.split("&")[0];
-  } else if (url.includes("youtu.be/")) {
-    videoId = url.split("youtu.be/")[1]?.split("?")[0];
-  }
-  
-  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+const isVideoMedia = (mimeType?: string | null, url?: string | null) => {
+  if (mimeType) return mimeType.startsWith("video/");
+  if (!url) return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/i.test(url);
+};
+
+const isImageMedia = (mimeType?: string | null, url?: string | null) => {
+  if (mimeType) return mimeType.startsWith("image/");
+  if (!url) return false;
+  return /\.(png|jpe?g|webp|gif|avif|svg)(\?|#|$)/i.test(url);
 };
 
 const Testimonials = () => {
@@ -52,7 +50,11 @@ const Testimonials = () => {
     return items.slice(startIndex, endIndex);
   }, [currentPage, items]);
 
+  const hasAnyMedia = (testimonial?: TestimonialItem | null) =>
+    Boolean((testimonial?.media || []).some((m) => Boolean(m?.url)));
+
   const handleOpenModal = (testimonial: TestimonialItem) => {
+    if (!hasAnyMedia(testimonial)) return;
     setSelectedTestimonial(testimonial);
     setIsModalOpen(true);
   };
@@ -60,20 +62,6 @@ const Testimonials = () => {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  const handleNavigate = (direction: "prev" | "next") => {
-    if (!selectedTestimonial) return;
-    const currentIndex = items.findIndex((t) => t.id === selectedTestimonial.id);
-    const newIndex =
-      direction === "prev"
-        ? (currentIndex - 1 + items.length) % items.length
-        : (currentIndex + 1) % items.length;
-    setSelectedTestimonial(items[newIndex]);
-  };
-
-  const currentIndex = selectedTestimonial
-    ? items.findIndex((t) => t.id === selectedTestimonial.id)
-    : -1;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -100,48 +88,70 @@ const Testimonials = () => {
         {/* Video Gallery Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12 max-w-5xl mx-auto">
           {(loading ? Array.from({ length: 4 }) : paginatedTestimonials).map((testimonial: any, index) => (
+              (() => {
+                const testimonialHasMedia = !loading && hasAnyMedia(testimonial);
+                return (
               <div
                 key={loading ? index : testimonial.id}
-                className="group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-soft transition-smooth cursor-pointer animate-scale-in"
+                className={`group bg-card rounded-xl overflow-hidden shadow-card hover:shadow-soft transition-smooth animate-scale-in ${testimonialHasMedia ? "cursor-pointer" : "cursor-default opacity-90"}`}
                 style={{ animationDelay: `${index * 0.05}s` }}
-                onClick={() => !loading && handleOpenModal(testimonial)}
+                onClick={() => testimonialHasMedia && handleOpenModal(testimonial)}
                 role="button"
-                tabIndex={0}
+                tabIndex={testimonialHasMedia ? 0 : -1}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    if (!loading) handleOpenModal(testimonial);
+                    if (testimonialHasMedia) handleOpenModal(testimonial);
                   }
                 }}
-                aria-label={`View ${(testimonial?.travelerName || "customer")}'s story`}
+                aria-label={
+                  testimonialHasMedia
+                    ? `View ${(testimonial?.travelerName || "customer")}'s story`
+                    : `${testimonial?.travelerName || "Customer"} story (no media)`
+                }
               >
                 <div className="relative aspect-video bg-muted overflow-hidden">
                   {!loading && (() => {
-                    const videoUrl: string | undefined = testimonial.video?.[0]?.url;
-                    const thumb = getYoutubeThumbnail(videoUrl);
-                    if (thumb) {
+                    const media = testimonial.media || [];
+                    const cover = media.find((m: any) => isImageMedia(m?.mimeType, m?.url));
+                    if (cover?.url) {
                       return (
                         <img
-                          src={thumb}
+                          src={cover.url}
                           alt={testimonial.travelerName || "Customer story"}
                           className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
                           loading="lazy"
                         />
                       );
                     }
-                    if (videoUrl) {
+
+                    const first = media[0];
+                    if (first?.url && isVideoMedia(first?.mimeType, first?.url)) {
                       return (
                         <video
-                          src={videoUrl}
+                          src={first.url}
                           className="w-full h-full object-cover"
                           preload="metadata"
                           aria-label={testimonial.travelerName || "Customer story"}
+                          muted
                         />
                       );
                     }
+
+                    if (first?.url && isImageMedia(first?.mimeType, first?.url)) {
+                      return (
+                        <img
+                          src={first.url}
+                          alt={testimonial.travelerName || "Customer story"}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+                          loading="lazy"
+                        />
+                      );
+                    }
+
                     return null;
                   })()}
-                  {!loading && testimonial.video?.length ? (
+                  {!loading && (testimonial.media || []).some((m: any) => isVideoMedia(m?.mimeType, m?.url)) ? (
                     <div className="absolute inset-0 flex items-center justify-center bg-foreground/20 group-hover:bg-foreground/30 transition-smooth">
                       <div className="w-16 h-16 rounded-full bg-primary/90 flex items-center justify-center group-hover:scale-110 transition-smooth shadow-soft">
                         <Play className="h-8 w-8 text-primary-foreground ml-1" fill="currentColor" />
@@ -175,6 +185,8 @@ const Testimonials = () => {
                   ) : null}
                 </div>
               </div>
+                );
+              })()
             ))}
         </div>
 
@@ -238,19 +250,15 @@ const Testimonials = () => {
       </div>
 
       {/* Video Modal */}
-      {selectedTestimonial && (
+      {selectedTestimonial && isModalOpen && hasAnyMedia(selectedTestimonial) && (
         <VideoModal
           isOpen={isModalOpen}
           onClose={handleCloseModal}
-          videoUrl={selectedTestimonial.video?.[0]?.url}
-          posterImage={getYoutubeThumbnail(selectedTestimonial.video?.[0]?.url || undefined) || undefined}
+          media={selectedTestimonial.media || []}
           travelerName={selectedTestimonial.travelerName || undefined}
           travelerLocation={selectedTestimonial.travelerLocation || undefined}
+          descriptionHtml={selectedTestimonial.description?.html || undefined}
           quote={undefined}
-          onPrevious={() => handleNavigate("prev")}
-          onNext={() => handleNavigate("next")}
-          hasPrevious={currentIndex > 0}
-          hasNext={currentIndex < items.length - 1}
         />
       )}
     </div>

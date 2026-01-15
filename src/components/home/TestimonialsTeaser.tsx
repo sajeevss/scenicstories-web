@@ -3,26 +3,27 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Play, Star, Quote } from "lucide-react";
 import { useEffect, useState } from "react";
+import VideoModal from "@/components/testimonials/VideoModal";
 import { fetchTestimonials, type TestimonialItem } from "@/lib/hygraph";
 
-// Helper function to extract YouTube video ID and create thumbnail URL
-const getYoutubeThumbnail = (url?: string): string | null => {
-  if (!url) return null;
-  
-  let videoId = null;
-  if (url.includes("youtube.com/watch?v=")) {
-    videoId = url.split("v=")[1]?.split("&")[0];
-  } else if (url.includes("youtu.be/")) {
-    videoId = url.split("youtu.be/")[1]?.split("?")[0];
-  }
-  
-  return videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : null;
+const isVideoMedia = (mimeType?: string | null, url?: string | null) => {
+  if (mimeType) return mimeType.startsWith("video/");
+  if (!url) return false;
+  return /\.(mp4|webm|ogg|mov|m4v)(\?|#|$)/i.test(url);
+};
+
+const isImageMedia = (mimeType?: string | null, url?: string | null) => {
+  if (mimeType) return mimeType.startsWith("image/");
+  if (!url) return false;
+  return /\.(png|jpe?g|webp|gif|avif|svg)(\?|#|$)/i.test(url);
 };
 
 const TestimonialsTeaser = () => {
   const [items, setItems] = useState<TestimonialItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedTestimonial, setSelectedTestimonial] = useState<TestimonialItem | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -40,6 +41,19 @@ const TestimonialsTeaser = () => {
       mounted = false;
     };
   }, []);
+
+  const hasAnyMedia = (testimonial?: TestimonialItem | null) =>
+    Boolean((testimonial?.media || []).some((m) => Boolean(m?.url)));
+
+  const handleOpenModal = (testimonial: TestimonialItem) => {
+    if (!hasAnyMedia(testimonial)) return;
+    setSelectedTestimonial(testimonial);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   return (
     <section className="py-16 md:py-24 bg-gradient-to-b from-secondary/30 to-background">
@@ -62,34 +76,52 @@ const TestimonialsTeaser = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {(loading ? Array.from({ length: 3 }) : items).map((testimonial: any, index) => (
+            (() => {
+              const testimonialHasMedia =
+                !loading && Boolean((testimonial?.media || []).some((m: any) => Boolean(m?.url)));
+              return (
             <Link
               key={loading ? index : testimonial.id}
               to="/testimonials"
               className="block animate-scale-in"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <Card className="overflow-hidden group hover:shadow-elevated transition-smooth h-full">
+              <Card className={`overflow-hidden group transition-smooth h-full ${testimonialHasMedia ? "hover:shadow-elevated" : "opacity-90"}`}>
                 <div className="relative h-72 overflow-hidden bg-muted">
                   {!loading && (() => {
-                    const videoUrl: string | undefined = testimonial.video?.[0]?.url;
-                    const thumb = getYoutubeThumbnail(videoUrl);
-                    if (thumb) {
+                    const media = testimonial.media || [];
+                    const cover = media.find((m: any) => isImageMedia(m?.mimeType, m?.url));
+                    if (cover?.url) {
                       return (
                         <img
-                          src={thumb}
+                          src={cover.url}
                           alt={testimonial.travelerName || "Customer story"}
                           className="w-full h-full object-cover transition-smooth transform group-hover:scale-105"
                           loading="lazy"
                         />
                       );
                     }
-                    if (videoUrl) {
+
+                    const first = media[0];
+                    if (first?.url && isVideoMedia(first?.mimeType, first?.url)) {
                       return (
                         <video
-                          src={videoUrl}
+                          src={first.url}
                           className="w-full h-full object-cover"
                           preload="metadata"
                           aria-label={testimonial.travelerName || "Customer story"}
+                          muted
+                        />
+                      );
+                    }
+
+                    if (first?.url && isImageMedia(first?.mimeType, first?.url)) {
+                      return (
+                        <img
+                          src={first.url}
+                          alt={testimonial.travelerName || "Customer story"}
+                          className="w-full h-full object-cover transition-smooth transform group-hover:scale-105"
+                          loading="lazy"
                         />
                       );
                     }
@@ -97,11 +129,20 @@ const TestimonialsTeaser = () => {
                   })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                   
-                  {!loading && testimonial.video?.length && (
+                  {testimonialHasMedia && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-elevated group-hover:scale-110 transition-smooth">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          handleOpenModal(testimonial);
+                        }}
+                        className="w-16 h-16 bg-primary rounded-full flex items-center justify-center shadow-elevated group-hover:scale-110 transition-smooth"
+                        aria-label={`Play ${(testimonial?.travelerName || "customer")}'s story`}
+                      >
                         <Play className="h-8 w-8 text-white fill-white ml-1" />
-                      </div>
+                      </button>
                     </div>
                   )}
 
@@ -124,11 +165,11 @@ const TestimonialsTeaser = () => {
                     <Quote className="h-8 w-8 text-primary/20 absolute -top-2 -left-2" />
                     {!loading && testimonial.description?.html ? (
                       <div 
-                        className="text-lg leading-relaxed text-foreground/90 pl-6"
+                        className="text-lg leading-relaxed text-foreground/90 pl-6 line-clamp-3"
                         dangerouslySetInnerHTML={{ __html: testimonial.description.html }}
                       />
                     ) : (
-                      <p className="text-lg leading-relaxed text-foreground/90 pl-6">
+                      <p className="text-lg leading-relaxed text-foreground/90 pl-6 line-clamp-3">
                         {loading ? "\u00A0" : "Amazing experience with Scenic Stories!"}
                       </p>
                     )}
@@ -136,6 +177,8 @@ const TestimonialsTeaser = () => {
                 </CardContent>
               </Card>
             </Link>
+              );
+            })()
           ))}
         </div>
 
@@ -147,6 +190,17 @@ const TestimonialsTeaser = () => {
           </Button>
         </div>
       </div>
+
+      {selectedTestimonial && isModalOpen && hasAnyMedia(selectedTestimonial) && (
+        <VideoModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          media={selectedTestimonial.media || []}
+          travelerName={selectedTestimonial.travelerName || undefined}
+          travelerLocation={selectedTestimonial.travelerLocation || undefined}
+          descriptionHtml={selectedTestimonial.description?.html || undefined}
+        />
+      )}
     </section>
   );
 };

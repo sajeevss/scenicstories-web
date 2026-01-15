@@ -51,14 +51,14 @@ export interface TestimonialItem {
   travelerName?: string | null;
   description?: { html?: string; json?: unknown } | null;
   travelerLocation?: string | null;
-  video?: { url: string }[] | null;
+  media?: { url: string; mimeType?: string | null }[] | null;
   active?: boolean | null;
 }
 
 export async function fetchPackages(limit?: number) {
   const query = gql`
     query Packages($limit: Int) {
-      packages(first: $limit, where: { active: true }) {
+      packages(first: $limit, orderBy: publishedAt_DESC, where: { active: true }) {
         id
         packageName
         description { html }
@@ -78,7 +78,7 @@ export async function fetchPackages(limit?: number) {
 export async function fetchInternationalPackages(limit?: number) {
   const query = gql`
     query GetInternationalPackages($limit: Int) {
-      internationalPackages(first: $limit, where: { active: true }) {
+      internationalPackages(first: $limit, orderBy: publishedAt_DESC, where: { active: true }) {
         id
         packageName
         description { html }
@@ -98,12 +98,12 @@ export async function fetchInternationalPackages(limit?: number) {
 export async function fetchTestimonials(limit?: number) {
   const query = gql`
     query Testimonials($limit: Int) {
-      testimonials(first: $limit, where: { active: true }) {
+      testimonials(first: $limit, orderBy: publishedAt_DESC, where: { active: true }) {
         id
         travelerName
         travelerLocation
         description { html }
-        video { url }
+        media { url mimeType }
         active
       }
     }
